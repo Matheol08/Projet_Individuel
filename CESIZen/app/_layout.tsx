@@ -1,39 +1,56 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Info from './(tabs)/info';
+import Profile from './(tabs)/Profile';
+import Exercice from './(tabs)/exercice';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const Tab = createBottomTabNavigator();
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
+function Layout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          if (route.name === 'Info') {
+            iconName = focused ? 'information-circle' : 'information-circle-outline';
+            color = focused ? 'blue' : 'gray';  
+            return <Ionicons name={iconName} size={size} color={color} />;
+          } else if (route.name === 'Exercices de respirations') {
+            iconName = focused ? 'fitness-center' : 'fitness-center';
+            color = focused ? 'green' : 'gray';  
+            return <MaterialIcons name={iconName} size={size} color={color} />;
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'person' : 'person-outline';
+            color = focused ? 'red' : 'gray';  
+            return <Ionicons name={iconName} size={size} color={color} />;
+          }
+        },
+        tabBarActiveTintColor: 'black', 
+        tabBarInactiveTintColor: 'gray', 
+      })}
+    >
+      <Tab.Screen 
+        name="Info" 
+        component={Info} 
+        options={{ tabBarLabel: 'Info' }}
+      />
+      <Tab.Screen 
+        name="Exercices de respirations" 
+        component={Exercice} 
+        options={{ tabBarLabel: 'Exercice' }}
+      />
+      <Tab.Screen 
+        name="Profile" 
+        component={Profile} 
+        options={{ tabBarLabel: 'Profil' }}
+      />
+    </Tab.Navigator>
   );
 }
+
+export default Layout;
